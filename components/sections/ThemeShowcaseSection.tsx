@@ -3,7 +3,7 @@ import MarqueeText from "@/components/sections/MarqueeText";
 import { showcaseBlocks } from "@/data/site-data";
 import PinkEditorialSection from "@/components/sections/PinkEditorialSection";
 import BlueAboutStackSection from "@/components/sections/BlueAboutStackSection";
-
+import BlueServiceLinesSection from "@/components/sections/BlueServiceLinesSection";
 
 type ShowcaseBlock = (typeof showcaseBlocks)[number];
 
@@ -47,9 +47,15 @@ export default function ThemeShowcaseSection({
       </section>
 
       <MarqueeText items={block.marqueeItems} accent={block.accent} tilted />
-      
+
       {block.id === "campaigns" && <PinkEditorialSection />}
-      {block.id === "talent" && <BlueAboutStackSection />}
+      {block.id === "talent" && (
+      <>
+          <BlueAboutStackSection />
+          <BlueServiceLinesSection />
+      </>
+      )}
+
 
       <section className="bg-[#F7F7F2] px-5 py-24 text-[#252525] md:px-8">
         <div className="mx-auto max-w-7xl">

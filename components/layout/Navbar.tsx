@@ -24,8 +24,8 @@ export default function Navbar() {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
 
   return (
-    <header className="fixed left-0 top-4 z-50 w-full px-4">
-      <nav className="mx-auto flex max-w-4xl items-center justify-between rounded-b-2xl rounded-t-sm border border-[#A7FF00] bg-[#252525]/95 px-6 py-3 shadow-xl backdrop-blur-md">
+    <header className="fixed left-0 top-0 z-50 w-full px-0">
+      <nav className="mx-auto flex max-w-4xl items-center justify-between rounded-b-2xl border-x border-b border-[#A7FF00] bg-[#252525]/95 px-6 py-3 shadow-xl backdrop-blur-md">
         <a href="#home" className="flex items-center gap-3">
           <Image
             src="/assets/logo/leluasa-logo.svg"

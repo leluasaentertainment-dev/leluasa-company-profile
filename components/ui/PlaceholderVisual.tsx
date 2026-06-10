@@ -31,7 +31,7 @@ export default function PlaceholderVisual({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-[0.4rem] bg-gradient-to-br ${style.bg} ${style.glow} ring-1 ${style.ring} ${heightClass}`}
+      className={`relative overflow-hidden bg-gradient-to-br ${style.bg} ${style.glow} ring-1 ${style.ring} ${heightClass}`}
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(255,255,255,0.35),transparent_18%),radial-gradient(circle_at_75%_30%,rgba(255,255,255,0.15),transparent_20%),radial-gradient(circle_at_50%_80%,rgba(255,255,255,0.12),transparent_18%)]" />
 
