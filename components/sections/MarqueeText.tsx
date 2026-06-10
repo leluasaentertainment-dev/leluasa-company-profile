@@ -16,7 +16,7 @@ export default function MarqueeText({
   return (
     <section
       className={`relative z-20 overflow-hidden ${
-        tilted ? "-my-5 rotate-[-2deg] scale-[1.04]" : ""
+        tilted ? "-mt-8 -mb-5 rotate-[-2deg] scale-[1.04]" : ""
       }`}
     >
       <div
