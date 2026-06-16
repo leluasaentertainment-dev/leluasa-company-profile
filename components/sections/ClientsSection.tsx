@@ -2,11 +2,17 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { clients } from "@/data/site-data";
 
-export default function ClientsSection() {
+type ClientItem = {
+  name: string;
+  image: string;
+};
+
+export default function ClientsSection({ clients }: { clients: ClientItem[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
-
+  if (clients.length === 0) {
+    return null;
+  }
   const repeatedText = Array.from({ length: 12 }, (_, index) => index);
 
   const rotations = [
