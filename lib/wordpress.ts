@@ -1,5 +1,6 @@
 type WpPost = {
   id: number;
+  slug: string;
   title: {
     rendered: string;
   };
@@ -19,7 +20,9 @@ type WpPost = {
 
 export type CmsWork = {
   title: string;
+  slug: string;
   description: string;
+  content: string;
   category: string;
   metric: string;
   theme: "green" | "pink" | "blue";
@@ -29,7 +32,9 @@ export type CmsWork = {
 
 export type CmsService = {
   title: string;
+  slug: string;
   description: string;
+  content: string;
   themeGroup: "competition" | "campaigns" | "talent";
   order: number;
   image: string;
@@ -44,10 +49,12 @@ export type CmsClient = {
 const API_BASE =
   process.env.WORDPRESS_API_URL ?? "https://cms.leluasa.id/wp-json/wp/v2";
 
-async function fetchWpPosts(postType: string): Promise<WpPost[]> {
+async function fetchWpPosts(endpoint: string): Promise<WpPost[]> {
   try {
+    const separator = endpoint.includes("?") ? "&" : "?";
+
     const response = await fetch(
-      `${API_BASE}/${postType}?_embed&per_page=100`,
+      `${API_BASE}/${endpoint}${separator}_embed&per_page=100`,
       {
         next: {
           revalidate: 60,
@@ -64,6 +71,7 @@ async function fetchWpPosts(postType: string): Promise<WpPost[]> {
     return [];
   }
 }
+
 
 function cleanText(value: string | undefined) {
   if (!value) return "";
@@ -111,7 +119,9 @@ export async function getCmsWorks(): Promise<CmsWork[]> {
   return posts
     .map((post) => ({
       title: cleanText(post.title.rendered),
+      slug: post.slug,
       description: cleanText(post.excerpt?.rendered || post.content?.rendered),
+      content: post.content?.rendered ?? "",
       category: String(post.acf?.category ?? "Project"),
       metric: String(post.acf?.metric ?? ""),
       theme: getTheme(post.acf?.theme),
@@ -127,10 +137,12 @@ export async function getCmsServices(): Promise<CmsService[]> {
   return posts
     .map((post) => ({
       title: cleanText(post.title.rendered),
+      slug: post.slug,
       description: String(
         post.acf?.short_description ??
           cleanText(post.excerpt?.rendered || post.content?.rendered)
       ),
+      content: post.content?.rendered ?? "",
       themeGroup: getThemeGroup(post.acf?.theme_group),
       order: getOrder(post),
       image: getFeaturedImage(post, "/assets/services/service-competition.jpg"),
@@ -148,4 +160,47 @@ export async function getCmsClients(): Promise<CmsClient[]> {
       image: getFeaturedImage(post, "/assets/hero/hero-green.jpg"),
     }))
     .sort((a, b) => a.order - b.order);
+}
+
+export async function getCmsWorkBySlug(slug: string): Promise<CmsWork | null> {
+  const posts = await fetchWpPosts(`works?slug=${encodeURIComponent(slug)}`);
+
+  if (posts.length === 0) return null;
+
+  const post = posts[0];
+
+  return {
+    title: cleanText(post.title.rendered),
+    slug: post.slug,
+    description: cleanText(post.excerpt?.rendered || post.content?.rendered),
+    content: post.content?.rendered ?? "",
+    category: String(post.acf?.category ?? "Project"),
+    metric: String(post.acf?.metric ?? ""),
+    theme: getTheme(post.acf?.theme),
+    order: getOrder(post),
+    image: getFeaturedImage(post, "/assets/hero/hero-green.jpg"),
+  };
+}
+
+export async function getCmsServiceBySlug(
+  slug: string
+): Promise<CmsService | null> {
+  const posts = await fetchWpPosts(`services?slug=${encodeURIComponent(slug)}`);
+
+  if (posts.length === 0) return null;
+
+  const post = posts[0];
+
+  return {
+    title: cleanText(post.title.rendered),
+    slug: post.slug,
+    description: String(
+      post.acf?.short_description ??
+        cleanText(post.excerpt?.rendered || post.content?.rendered)
+    ),
+    content: post.content?.rendered ?? "",
+    themeGroup: getThemeGroup(post.acf?.theme_group),
+    order: getOrder(post),
+    image: getFeaturedImage(post, "/assets/services/service-competition.jpg"),
+  };
 }

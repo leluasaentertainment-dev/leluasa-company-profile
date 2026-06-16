@@ -47,6 +47,7 @@ export default async function Home() {
         servicesFromCms.length > 0
           ? servicesFromCms.map((service) => ({
               title: service.title,
+              slug: service.slug,
               description: service.description,
               image: service.image,
             }))
@@ -55,6 +56,7 @@ export default async function Home() {
         worksFromCms.length > 0
           ? worksFromCms.map((work) => ({
               title: work.title,
+              slug: work.slug,
               category: work.category,
               metric: work.metric,
               image: work.image,
