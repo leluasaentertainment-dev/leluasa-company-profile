@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Game {
+  id                String       @id @default(cuid())
+  gameIdFromApi     Int?         @unique
+  name              String
+  totalPrizeUsd     Float        @default(0)
+  totalTournaments  Int          @default(0)
+  totalPlayers      Int          @default(0)
+
+  genre             String?
+  platform          String?
+  competitiveFormat String?
+  leluasaFitScore   Int          @default(50)
+  opportunityScore  Float        @default(0)
+
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  lastSyncedAt      DateTime?
+
+  tournaments       Tournament[]
+}
+
+model Tournament {
+  id                  String   @id @default(cuid())
+  tournamentIdFromApi  Int?     @unique
+  gameId              String?
+  name                String
+  startDate           DateTime?
+  endDate             DateTime?
+  location            String?
+  isTeamplay          Boolean  @default(false)
+  totalPrizeUsd       Float    @default(0)
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  lastSyncedAt        DateTime?
+
+  game                Game?    @relation(fields: [gameId], references: [id])
+}
+
+model Player {
+  id                String   @id @default(cuid())
+  playerIdFromApi   Int?     @unique
+  nickname          String
+  firstName         String?
+  lastName          String?
+  countryCode       String?
+  totalPrizeUsd     Float    @default(0)
+  totalTournaments  Int      @default(0)
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  lastSyncedAt      DateTime?
+}
+
+model Team {
+  id                String   @id @default(cuid())
+  teamIdFromApi     Int?     @unique
+  name              String
+  totalPrizeUsd     Float    @default(0)
+  totalTournaments  Int      @default(0)
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  lastSyncedAt      DateTime?
+}
