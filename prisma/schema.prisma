@@ -53,6 +53,7 @@ model Player {
   firstName         String?
   lastName          String?
   countryCode       String?
+  primaryGame       String?
   totalPrizeUsd     Float    @default(0)
   totalTournaments  Int      @default(0)
 
@@ -65,10 +66,42 @@ model Team {
   id                String   @id @default(cuid())
   teamIdFromApi     Int?     @unique
   name              String
+  primaryGame       String?
+  region            String?
   totalPrizeUsd     Float    @default(0)
   totalTournaments  Int      @default(0)
 
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   lastSyncedAt      DateTime?
+}
+
+model Country {
+  id              String   @id @default(cuid())
+  code            String   @unique
+  name            String
+  totalPrizeUsd   Float    @default(0)
+  totalPlayers    Int      @default(0)
+  topGame         String?
+  topGamePrizeUsd Float    @default(0)
+  topGameShare    Float    @default(0)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model League {
+  id                String   @id @default(cuid())
+  leagueIdFromApi   Int?     @unique
+  name              String
+  mainGame          String?
+  region            String?
+  organizer         String?
+  totalPrizeUsd     Float    @default(0)
+  totalTournaments  Int      @default(0)
+  totalPlayers      Int      @default(0)
+  eventType         String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }

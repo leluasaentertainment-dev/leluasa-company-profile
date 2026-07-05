@@ -14,3 +14,7 @@ export function formatCompactUsd(value: number) {
     maximumFractionDigits: 1,
   }).format(value);
 }
+
+export function formatNumber(value: number) {
+  return new Intl.NumberFormat("en-US").format(value);
+}

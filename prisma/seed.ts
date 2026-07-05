@@ -1,101 +1,106 @@
 import { PrismaClient } from "@prisma/client";
+import {
+  gamesSeedData,
+  tournamentsSeedData,
+  playersSeedData,
+  teamsSeedData,
+  countriesSeedData,
+  leaguesSeedData,
+} from "../data/esportsSeedData";
 
 const prisma = new PrismaClient();
 
+function calculateOpportunityScore(params: {
+  totalPrizeUsd: number;
+  totalTournaments: number;
+  totalPlayers: number;
+  leluasaFitScore: number;
+}) {
+  const maxPrize = 350000000;
+  const maxTournaments = 7200;
+  const maxPlayers = 16500;
+
+  const prizeScore = (params.totalPrizeUsd / maxPrize) * 100;
+  const tournamentScore = (params.totalTournaments / maxTournaments) * 100;
+  const playerScore = (params.totalPlayers / maxPlayers) * 100;
+
+  const opportunityScore =
+    prizeScore * 0.3 +
+    tournamentScore * 0.25 +
+    playerScore * 0.25 +
+    params.leluasaFitScore * 0.2;
+
+  return Math.round(opportunityScore);
+}
+
 async function main() {
-  await prisma.tournament.deleteMany();
-  await prisma.game.deleteMany();
-  await prisma.player.deleteMany();
-  await prisma.team.deleteMany();
+   await prisma.tournament.deleteMany();
+   await prisma.player.deleteMany();
+   await prisma.team.deleteMany();
+   await prisma.country.deleteMany();
+   await prisma.league.deleteMany();
+   await prisma.game.deleteMany();
 
-  const dota2 = await prisma.game.create({
-    data: {
-      gameIdFromApi: 231,
-      name: "Dota 2",
-      totalPrizeUsd: 350000000,
-      totalTournaments: 1900,
-      totalPlayers: 4800,
-      genre: "MOBA",
-      platform: "PC",
-      competitiveFormat: "5v5",
-      leluasaFitScore: 75,
-      opportunityScore: 92,
-    },
-  });
+  for (const game of gamesSeedData) {
+    const opportunityScore = calculateOpportunityScore({
+      totalPrizeUsd: game.totalPrizeUsd,
+      totalTournaments: game.totalTournaments,
+      totalPlayers: game.totalPlayers,
+      leluasaFitScore: game.leluasaFitScore,
+    });
 
-  const valorant = await prisma.game.create({
-    data: {
-      gameIdFromApi: 599,
-      name: "Valorant",
-      totalPrizeUsd: 45000000,
-      totalTournaments: 1800,
-      totalPlayers: 6800,
-      genre: "FPS",
-      platform: "PC",
-      competitiveFormat: "5v5",
-      leluasaFitScore: 88,
-      opportunityScore: 78,
-    },
-  });
-
-  await prisma.tournament.createMany({
-    data: [
-      {
-        tournamentIdFromApi: 10001,
-        gameId: dota2.id,
-        name: "The International 2024",
-        location: "Global",
-        isTeamplay: true,
-        totalPrizeUsd: 2600000,
+    await prisma.game.create({
+      data: {
+        gameIdFromApi:
+          game.gameIdFromApi === 0 ? null : game.gameIdFromApi,
+        name: game.name,
+        totalPrizeUsd: game.totalPrizeUsd,
+        totalTournaments: game.totalTournaments,
+        totalPlayers: game.totalPlayers,
+        genre: game.genre,
+        platform: game.platform,
+        competitiveFormat: game.competitiveFormat,
+        leluasaFitScore: game.leluasaFitScore,
+        opportunityScore,
       },
-      {
-        tournamentIdFromApi: 10002,
-        gameId: valorant.id,
-        name: "Valorant Champions 2024",
-        location: "Global",
-        isTeamplay: true,
-        totalPrizeUsd: 2250000,
+    });
+  }
+
+  for (const tournament of tournamentsSeedData) {
+    const relatedGame = await prisma.game.findFirst({
+      where: {
+        name: tournament.gameName,
       },
-    ],
-  });
+    });
+
+    await prisma.tournament.create({
+      data: {
+        name: tournament.name,
+        gameId: relatedGame?.id,
+        location: tournament.location,
+        isTeamplay: tournament.isTeamplay,
+        totalPrizeUsd: tournament.totalPrizeUsd,
+      },
+    });
+  }
 
   await prisma.player.createMany({
-    data: [
-      {
-        playerIdFromApi: 20001,
-        nickname: "PlayerOne",
-        countryCode: "ID",
-        totalPrizeUsd: 150000,
-        totalTournaments: 24,
-      },
-      {
-        playerIdFromApi: 20002,
-        nickname: "PlayerTwo",
-        countryCode: "PH",
-        totalPrizeUsd: 210000,
-        totalTournaments: 31,
-      },
-    ],
+    data: playersSeedData,
   });
 
   await prisma.team.createMany({
-    data: [
-      {
-        teamIdFromApi: 30001,
-        name: "Team Alpha",
-        totalPrizeUsd: 900000,
-        totalTournaments: 45,
-      },
-      {
-        teamIdFromApi: 30002,
-        name: "Team Beta",
-        totalPrizeUsd: 650000,
-        totalTournaments: 38,
-      },
-    ],
+    data: teamsSeedData,
+  });
+  await prisma.country.createMany({
+    data: countriesSeedData,
   });
 
-  console.log("Seed data berhasil dibuat.");
+  await prisma.league.createMany({
+    data: leaguesSeedData,
+  });
+
+
+  console.log("Local esports dataset berhasil dimasukkan ke database.");
 }
 
 main()
