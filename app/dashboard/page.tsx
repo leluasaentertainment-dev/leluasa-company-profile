@@ -210,9 +210,6 @@ export default async function DashboardPage() {
               Esports Market Intelligence
             </span>
   
-            <span className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs text-gray-400">
-              Local Dataset Mode
-            </span>
           </div>
 
           <div className="grid gap-8 lg:grid-cols-[1.4fr_0.6fr] lg:items-end">
