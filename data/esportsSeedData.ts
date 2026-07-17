@@ -14,7 +14,7 @@ export const gamesSeedData = [
     gameIdFromApi: 245,
     name: "Counter-Strike",
     totalPrizeUsd: 165000000,
-    totalTournaments: 7200,
+    totalTournaments: 7210,
     totalPlayers: 16500,
     genre: "FPS",
     platform: "PC",
